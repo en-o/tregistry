@@ -1,0 +1,38 @@
+### 获取所有服务实例
+http://localhost:8484/findAll?service=cn.tann.trpc.UserService
+
+
+
+### 注册一个实例
+http://localhost:8484/reg?service=cn.tann.trpc.UserService
+Content-Type: application/json
+
+{
+  "context": "trpc",
+  "host": "127.0.0.1",
+  "port": 8082,
+  "schema": "http",
+  "status": false,
+  "parameters": {
+    "env": "dev",
+    "tag": "red"
+  }
+}
+
+
+
+### 注销一个实例
+http://localhost:8484/unreg?service=cn.tann.trpc.UserService
+Content-Type: application/json
+
+{
+  "context": "trpc",
+  "host": "127.0.0.1",
+  "port": 8082,
+  "schema": "http",
+  "status": false,
+  "parameters": {
+    "env": "dev",
+    "tag": "red"
+  }
+}

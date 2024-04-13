@@ -3,6 +3,7 @@ package cn.tannn.tregistry.service;
 import cn.tannn.tregistry.model.InstanceMeta;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 注册中心接口
@@ -36,6 +37,25 @@ public interface RegistryService {
      */
     List<InstanceMeta> getAllInstances(String service);
 
-    // todo
+    /**
+     * 刷新服务时间戳
+     * @param services 服务名
+     * @param instance 服务实例
+     * @return 时间戳
+     */
+    Long renew(InstanceMeta instance, String... services);
 
+    /**
+     * 服务版本
+     * @param service 服务名
+     * @return version
+     */
+    Long version(String service);
+
+    /**
+     * 服务版本
+     * @param service 服务名
+     * @return service,version
+     */
+    Map<String, Long> version(String... service);
 }

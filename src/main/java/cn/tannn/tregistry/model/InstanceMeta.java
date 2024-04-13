@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -105,6 +106,7 @@ public class InstanceMeta {
         return String.format("%s://%s:%d/%s", schema, host, port, context);
     }
 
+
     /**
      * 追加 params
      * @param params 新增的
@@ -123,5 +125,14 @@ public class InstanceMeta {
      */
     public String toMetas() {
         return JSON.toJSONString(this.getParameters());
+    }
+
+
+    /**
+     * url 转  InstanceMeta
+     */
+    public static InstanceMeta from(String url) {
+        URI uri = URI.create(url);
+        return new InstanceMeta(uri.getScheme(), uri.getHost(), uri.getPort(), uri.getPath().replace("/",""));
     }
 }

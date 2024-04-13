@@ -1,7 +1,6 @@
 package cn.tannn.tregistry.service;
 
 import cn.tannn.tregistry.model.InstanceMeta;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;

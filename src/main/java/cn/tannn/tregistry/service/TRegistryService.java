@@ -86,7 +86,9 @@ public class TRegistryService implements RegistryService {
         // 探活
         long millis = System.currentTimeMillis();
         for (String service : services) {
-            TIMESTAMPS.putIfAbsent(service + "@" + instance.toUrl(), millis);
+            String key = service + "@" + instance.toUrl();
+            // todo 这里的数据可能会存在很多死信数据，需要处理下
+            TIMESTAMPS.put(key, millis);
         }
         return millis;
     }

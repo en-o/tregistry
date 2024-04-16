@@ -17,8 +17,9 @@
     </description>
     <properties>
         <java.version>17</java.version>
-        <fastjson2.version>2.0.47</fastjson2.version>
 
+        <fastjson2.version>2.0.47</fastjson2.version>
+        <okhttp.version>4.12.0</okhttp.version>
         <!-- 测试 -->
         <maven-surefire.version>3.2.3</maven-surefire.version>
         <!-- 编译 -->
@@ -38,6 +39,16 @@
             <groupId>com.alibaba.fastjson2</groupId>
             <artifactId>fastjson2</artifactId>
             <version>${fastjson2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-commons</artifactId>
+            <version>4.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>${okhttp.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

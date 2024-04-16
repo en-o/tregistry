@@ -1,5 +1,7 @@
 package cn.tannn.tregistry;
 
+import cn.tannn.tregistry.cluster.Cluster;
+import cn.tannn.tregistry.cluster.Server;
 import cn.tannn.tregistry.model.InstanceMeta;
 import cn.tannn.tregistry.service.RegistryService;
 import lombok.extern.slf4j.Slf4j;
@@ -26,9 +28,11 @@ public class TRegistryController {
 
     @Autowired
     RegistryService registryService;
+    @Autowired
+    Cluster cluster;
 
     /**
-     * 注册服务
+     * 注册服务实例
      *
      * @param service  服务名
      * @param instance 服务实例
@@ -41,7 +45,7 @@ public class TRegistryController {
     }
 
     /**
-     * 注销服务
+     * 注销服务实例
      *
      * @param service  服务名
      * @param instance 服务实例
@@ -68,7 +72,7 @@ public class TRegistryController {
 
 
     /**
-     * 保活
+     * 服务实例上报健康状况
      *
      * @param service 服务名
      * @return InstanceMeta
@@ -81,7 +85,7 @@ public class TRegistryController {
 
 
     /**
-     * 保活
+     * 服务实例上报健康状况
      *
      * @param services 服务名（逗号隔开）
      * @return InstanceMeta
@@ -93,7 +97,7 @@ public class TRegistryController {
     }
 
     /**
-     * 服务版本
+     * 服务实例版本
      * @param service 服务名
      * @return version
      */
@@ -104,7 +108,7 @@ public class TRegistryController {
     }
 
     /**
-     * 服务版本
+     * 服务实例版本
      * @param services 服务名（逗号隔开）
      * @return version
      */
@@ -113,5 +117,52 @@ public class TRegistryController {
         log.info("===> versions {} ", services);
         return registryService.version(services.split(","));
     }
+
+
+    /**
+     * 当前集群节点信息
+     * @return Server
+     */
+    @RequestMapping("info")
+    public Server info() {
+        Server self = cluster.self();
+        log.info("===> info : {} ", self);
+        return self;
+    }
+
+    /**
+     * 所有集群节点信息
+     * @return Server
+     */
+    @RequestMapping("cluster")
+    public List<Server> cluster() {
+        List<Server> servers = cluster.getServers();
+        log.info("===> cluster {}", servers);
+        return servers;
+    }
+
+    /**
+     * 获取当前集群的 leader
+     * @return Server
+     */
+    @RequestMapping("leader")
+    public Server leader() {
+        Server leader = cluster.leader();
+        log.info("===> leader {}", leader);
+        return leader;
+    }
+
+    /**
+     * 设置自己为主
+     * @return  Server
+     */
+    @RequestMapping("/sl")
+    public Server sl()
+    {
+        cluster.self().setLeader(true);
+        log.info(" ===> leader: {}", cluster.self());
+        return cluster.self();
+    }
+
 
 }

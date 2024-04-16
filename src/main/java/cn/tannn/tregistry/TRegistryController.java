@@ -68,7 +68,7 @@ public class TRegistryController {
 
 
     /**
-     * 刷新服务时间戳
+     * 保活
      *
      * @param service 服务名
      * @return InstanceMeta
@@ -81,7 +81,7 @@ public class TRegistryController {
 
 
     /**
-     * 刷新服务时间戳
+     * 保活
      *
      * @param services 服务名（逗号隔开）
      * @return InstanceMeta

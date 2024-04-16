@@ -10,7 +10,7 @@ Content-Type: application/json
 {
   "context": "trpc",
   "host": "127.0.0.1",
-  "port": 8082,
+  "port": 8081,
   "schema": "http",
   "status": false,
   "parameters": {
@@ -23,6 +23,23 @@ Content-Type: application/json
 
 ### 注销一个实例
 http://localhost:8484/unreg?service=cn.tann.trpc.UserService
+Content-Type: application/json
+
+{
+  "context": "trpc",
+  "host": "127.0.0.1",
+  "port": 8082,
+  "schema": "http",
+  "status": false,
+  "parameters": {
+    "env": "dev",
+    "tag": "red"
+  }
+}
+
+
+### 保活
+http://localhost:8484/renew?service=cn.tann.trpc.UserService
 Content-Type: application/json
 
 {

@@ -1,7 +1,6 @@
 package cn.tannn.tregistry.cluster;
 
 import cn.tannn.tregistry.http.HttpInvoker;
-import cn.tannn.tregistry.http.OkHttpInvoker;
 import cn.tannn.tregistry.properties.TRegistryProperties;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;

@@ -44,7 +44,7 @@ public class TRegistryConfig {
 
 
     /**
-     * 集群
+     * 注册中心集群处理
      * @param tRegistryProperties TRegistryProperties
      * @return Cluster
      */

@@ -74,6 +74,7 @@ public class Cluster {
             host = "127.0.0.1";
         }
         MYSELF = new Server("http://" + host + ":" + port, true, false, -1L);
+        log.info(" ===> myself =  {}", MYSELF);
         List<Server> servers = new ArrayList<>();
         // 获取配置中的所有节点
         registryProperties.getServerList().forEach(url -> {
@@ -84,6 +85,7 @@ public class Cluster {
                 url = url.replace("127.0.0.1", host);
             }
             if (url.equals(MYSELF.getUrl())) {
+                // 添加自己详细信息到集群节点里去
                 servers.add(MYSELF);
             } else {
                 server.setUrl(url);
@@ -96,11 +98,13 @@ public class Cluster {
         });
 
         this.servers = servers;
-        // 集群节点探活失败
+        // 注册中心集群处理线程
         this.executor.scheduleWithFixedDelay(() -> {
                     try {
+                        // 集群节点探活
                         updateServers();
-                        electLeader();
+                        // 集群节点选主
+                        new Election().electLeader(this.servers);
                     } catch (Exception e) {
                         log.error("集群节点探活/选举失败", e);
                     }
@@ -112,13 +116,17 @@ public class Cluster {
     }
 
 
+
     /**
-     * 集群探活检测
+     * 注册中心集群探活
      */
     private void updateServers() {
-        servers.forEach(server -> {
+        // 并行探活节点
+        servers.stream().parallel().forEach(server -> {
             try {
-                // 并且设置节点的 状态 和版本 还有 leader
+                // 探活自己没有意义
+                if(server.equals(MYSELF)){return;}
+                // 探活的同时，设置探活节点本身的 活跃状态，版本，leader状态
                 Server serverInfo = HttpInvoker.httpGet(server.getUrl() + "/info", Server.class);
                 log.info(" ===>>> health check success for {}", serverInfo);
                 if (serverInfo != null) {
@@ -135,56 +143,6 @@ public class Cluster {
     }
 
 
-    /**
-     * 集群选主判断
-     */
-    private void electLeader() {
-        List<Server> masters = this.servers.stream()
-                .filter(Server::isStatus)
-                .filter(Server::isLeader)
-                .toList();
-        if (masters.isEmpty()) {
-            log.info("====> elect for no leader:  {}", servers);
-            elect();
-        } else if (masters.size() > 1) {
-            log.info("====> elect for more then one leader: {}", servers);
-            elect();
-        } else {
-            log.info("====> no need election for leader:  {}", masters.get(0));
-        }
-
-    }
-
-    /**
-     * 集群选主操作
-     */
-    private void elect() {
-        // 1. 各个节点自己选，算法保证大家选的是一个 (当前)
-        // 2. 外部分布式锁。谁拿到锁，谁是主
-        // 3. 分布式一致性算法，比如 paxos, raft
-
-        // 候选者
-        Server candidate = null;
-        for (Server server : servers) {
-            server.setLeader(false);
-            if (server.isStatus()) {
-                if (candidate == null) {
-                    candidate = server;
-                } else {
-                    if (candidate.hashCode() < server.hashCode()) {
-                        candidate = server;
-                    }
-                }
-            }
-        }
-        if (candidate != null) {
-            candidate.setLeader(true);
-            log.info("====> elect for leader: {}", candidate);
-        } else {
-            log.warn("====> elect failed  for leader");
-        }
-
-    }
 
 
     /**

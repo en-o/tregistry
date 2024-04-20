@@ -126,7 +126,7 @@ public class TRegistryController {
     @RequestMapping("info")
     public Server info() {
         Server self = cluster.self();
-        log.info("===> info : {} ", self);
+        log.debug("===> info : {} ", self);
         return self;
     }
 

@@ -188,7 +188,7 @@ public class TRegistryController {
      * 非leader不允许操作指定接口
      */
     private void checkLeader() {
-        if(!cluster.leader().isLeader()){
+        if(!cluster.self().isLeader()){
             throw new RuntimeException("current server is not a leader, the leader is " +  cluster.leader().getUrl());
         }
     }

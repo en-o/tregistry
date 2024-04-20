@@ -37,7 +37,7 @@ public class TRegistryConfig {
      * @param registryService RegistryService
      * @return HealthChecker
      */
-    @Bean(initMethod = "start", destroyMethod = "stop")
+//    @Bean(initMethod = "start", destroyMethod = "stop")
     public HealthChecker healthChecker(@Autowired RegistryService registryService){
         return new THealthChecker(registryService);
     }

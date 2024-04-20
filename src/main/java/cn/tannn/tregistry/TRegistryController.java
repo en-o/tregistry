@@ -2,6 +2,7 @@ package cn.tannn.tregistry;
 
 import cn.tannn.tregistry.cluster.Cluster;
 import cn.tannn.tregistry.cluster.Server;
+import cn.tannn.tregistry.cluster.Snapshot;
 import cn.tannn.tregistry.model.InstanceMeta;
 import cn.tannn.tregistry.service.RegistryService;
 import lombok.extern.slf4j.Slf4j;
@@ -157,11 +158,22 @@ public class TRegistryController {
      * @return  Server
      */
     @RequestMapping("/sl")
-    public Server sl()
-    {
+    public Server sl(){
         cluster.self().setLeader(true);
         log.info(" ===> leader: {}", cluster.self());
         return cluster.self();
+    }
+
+
+    /**
+     * 获取集群 snapshot
+     * @return Server
+     */
+    @RequestMapping("snapshot")
+    public Snapshot snapshot() {
+        Snapshot snapshot = registryService.snapshot();
+        log.info("===> snapshot {}", snapshot);
+        return snapshot;
     }
 
 

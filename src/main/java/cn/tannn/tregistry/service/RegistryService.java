@@ -1,5 +1,6 @@
 package cn.tannn.tregistry.service;
 
+import cn.tannn.tregistry.cluster.Snapshot;
 import cn.tannn.tregistry.model.InstanceMeta;
 
 import java.util.List;
@@ -58,4 +59,12 @@ public interface RegistryService {
      * @return service,version
      */
     Map<String, Long> version(String... service);
+
+
+    /**
+     * 实例快照
+     *
+     * @return Snapshot
+     */
+    Snapshot snapshot();
 }

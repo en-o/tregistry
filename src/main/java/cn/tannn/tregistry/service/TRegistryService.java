@@ -1,13 +1,12 @@
 package cn.tannn.tregistry.service;
 
+import cn.tannn.tregistry.cluster.Snapshot;
 import cn.tannn.tregistry.model.InstanceMeta;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
@@ -41,7 +40,7 @@ public class TRegistryService implements RegistryService {
 
 
     @Override
-    public InstanceMeta register(String service, InstanceMeta instance) {
+    public synchronized InstanceMeta register(String service, InstanceMeta instance) {
         List<InstanceMeta> metas = REGISTRY.get(service);
         if (metas != null && !metas.isEmpty()) {
             if (metas.contains(instance)) {
@@ -61,7 +60,7 @@ public class TRegistryService implements RegistryService {
     }
 
     @Override
-    public InstanceMeta unregister(String service, InstanceMeta instance) {
+    public synchronized InstanceMeta unregister(String service, InstanceMeta instance) {
         List<InstanceMeta> metas = REGISTRY.get(service);
         if (metas == null || metas.isEmpty()) {
             return null;
@@ -82,7 +81,7 @@ public class TRegistryService implements RegistryService {
 
 
     @Override
-    public Long renew(InstanceMeta instance, String... services) {
+    public synchronized Long renew(InstanceMeta instance, String... services) {
         // 探活
         long millis = System.currentTimeMillis();
         for (String service : services) {
@@ -99,15 +98,22 @@ public class TRegistryService implements RegistryService {
         return VERSIONS.get(service);
     }
 
-    /**
-     * 服务版本
-     *
-     * @param service 服务名
-     * @return service, version
-     */
+
     @Override
     public Map<String, Long> version(String... service) {
         return Arrays.stream(service).collect(Collectors.toMap(x -> x, VERSIONS::get, (a, b) -> b));
+    }
+
+
+
+    @Override
+    public synchronized Snapshot snapshot() {
+        // 不干扰原来的对象自己new一个新的 , 深拷贝
+        MultiValueMap<String, InstanceMeta> registry = new LinkedMultiValueMap<>();
+        registry.addAll(REGISTRY);
+        Map<String, Long> timestamps = new HashMap<>(TIMESTAMPS);
+        Map<String, Long> versions = new HashMap<>(VERSIONS);
+        return new Snapshot(registry, timestamps, versions, VERSION.get());
     }
 
 }

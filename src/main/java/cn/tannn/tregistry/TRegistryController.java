@@ -43,8 +43,12 @@ public class TRegistryController {
     @RequestMapping("reg")
     public InstanceMeta register(@RequestParam("service") String service, @RequestBody InstanceMeta instance) {
         log.info("===> register {} @ {}", service, instance);
+        checkLeader();
         return registryService.register(service, instance);
     }
+
+
+
 
     /**
      * 注销服务实例
@@ -56,6 +60,7 @@ public class TRegistryController {
     @RequestMapping("unreg")
     public InstanceMeta unregister(@RequestParam("service") String service, @RequestBody InstanceMeta instance) {
         log.info("===> unregister {} @ {}", service, instance);
+        checkLeader();
         return registryService.unregister(service, instance);
     }
 
@@ -82,6 +87,7 @@ public class TRegistryController {
     @RequestMapping("renew")
     public Long renew(@RequestParam("service") String service, @RequestBody InstanceMeta instance) {
         log.info("===> renew {} @ {} ", service, instance);
+        checkLeader();
         return registryService.renew(instance, service);
     }
 
@@ -177,5 +183,14 @@ public class TRegistryController {
         return snapshot;
     }
 
+
+    /**
+     * 非leader不允许操作指定接口
+     */
+    private void checkLeader() {
+        if(!cluster.leader().isLeader()){
+            throw new RuntimeException("current server is not a leader, the leader is " +  cluster.leader().getUrl());
+        }
+    }
 
 }

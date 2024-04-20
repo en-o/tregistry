@@ -118,8 +118,9 @@ public class Cluster {
     private void updateServers() {
         servers.forEach(server -> {
             try {
+                // 并且设置节点的 状态 和版本 还有 leader
                 Server serverInfo = HttpInvoker.httpGet(server.getUrl() + "/info", Server.class);
-                System.out.println(" ===>>> health check success for " + serverInfo);
+                log.info(" ===>>> health check success for {}", serverInfo);
                 if (serverInfo != null) {
                     server.setStatus(true);
                     server.setLeader(serverInfo.isLeader());

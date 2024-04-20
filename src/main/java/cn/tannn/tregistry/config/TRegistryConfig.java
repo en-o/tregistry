@@ -33,7 +33,7 @@ public class TRegistryConfig {
 
 
     /**
-     * 探活
+     * 实例探活
      * @param registryService RegistryService
      * @return HealthChecker
      */

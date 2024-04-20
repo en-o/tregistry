@@ -1,6 +1,5 @@
 package cn.tannn.tregistry.service;
 
-import cn.tannn.tregistry.cluster.Snapshot;
 import cn.tannn.tregistry.model.InstanceMeta;
 
 import java.util.List;

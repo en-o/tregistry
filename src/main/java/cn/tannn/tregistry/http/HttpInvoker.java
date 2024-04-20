@@ -25,25 +25,25 @@ public interface HttpInvoker {
 
     @SneakyThrows
     static <T> T httpGet(String url, Class<T> clazz) {
-        log.debug(" =====>>>>>> httpGet: " + url);
+        log.debug(" ======>>>>>> httpGet: {} " ,  url);
         String respJson = Default.get(url);
-        log.debug(" =====>>>>>> response: " + respJson);
-        return JSON.parseObject(respJson, clazz);
+        log.debug(" ======>>>>>> response: {} " , respJson);
+        return JSON.to(clazz, respJson);
     }
 
     @SneakyThrows
     static <T> T httpGet(String url, TypeReference<T> typeReference) {
-        log.debug(" =====>>>>>> httpGet: " + url);
+        log.debug(" =====>>>>>> httpGet: {} " ,  url);
         String respJson = Default.get(url);
-        log.debug(" =====>>>>>> response: " + respJson);
+        log.debug(" =====>>>>>> response: {} " ,  respJson);
         return JSON.parseObject(respJson, typeReference);
     }
 
     @SneakyThrows
     static <T> T httpPost(String requestString,String url, Class<T> clazz) {
-        log.debug(" =====>>>>>> httpGet: " + url);
+        log.debug(" =====>>>>>> httpGet: {} " ,  url);
         String respJson = Default.post(requestString, url);
-        log.debug(" =====>>>>>> response: " + respJson);
+        log.debug(" =====>>>>>> response: {} " ,  respJson);
         return JSON.parseObject(respJson, clazz);
     }
 

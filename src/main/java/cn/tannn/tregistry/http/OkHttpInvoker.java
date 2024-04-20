@@ -38,7 +38,7 @@ public class OkHttpInvoker implements HttpInvoker {
                 .build();
         try {
             String respJson = client.newCall(request).execute().body().string();
-            log.debug(" ===> respJson = " + respJson);
+            log.debug(" ===> respJson =  {} " ,  respJson);
             return respJson;
         } catch (Exception e) {
             throw new RuntimeException(e);

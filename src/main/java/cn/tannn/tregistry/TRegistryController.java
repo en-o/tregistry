@@ -5,6 +5,7 @@ import cn.tannn.tregistry.cluster.Server;
 import cn.tannn.tregistry.cluster.Snapshot;
 import cn.tannn.tregistry.model.InstanceMeta;
 import cn.tannn.tregistry.service.RegistryService;
+import cn.tannn.tregistry.service.TRegistryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -171,7 +172,7 @@ public class TRegistryController {
      */
     @RequestMapping("snapshot")
     public Snapshot snapshot() {
-        Snapshot snapshot = registryService.snapshot();
+        Snapshot snapshot = TRegistryService.snapshot();
         log.info("===> snapshot {}", snapshot);
         return snapshot;
     }

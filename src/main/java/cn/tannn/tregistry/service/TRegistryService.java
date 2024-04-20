@@ -30,7 +30,7 @@ public class TRegistryService implements RegistryService {
      * 服务的版本 - 服务级别
      */
     final static Map<String, Long> VERSIONS = new ConcurrentHashMap<>();
-    final static AtomicLong VERSION = new AtomicLong(0);
+    public final static AtomicLong VERSION = new AtomicLong(0);
 
     /**
      * 实例时间戳  - 实例级别
@@ -106,14 +106,35 @@ public class TRegistryService implements RegistryService {
 
 
 
-    @Override
-    public synchronized Snapshot snapshot() {
+    /**
+     * 获取集群 实例快照
+     *
+     * @return Snapshot
+     */
+    public static synchronized Snapshot snapshot() {
         // 不干扰原来的对象自己new一个新的 , 深拷贝
-        MultiValueMap<String, InstanceMeta> registry = new LinkedMultiValueMap<>();
+        LinkedMultiValueMap<String, InstanceMeta> registry = new LinkedMultiValueMap<>();
         registry.addAll(REGISTRY);
         Map<String, Long> timestamps = new HashMap<>(TIMESTAMPS);
         Map<String, Long> versions = new HashMap<>(VERSIONS);
         return new Snapshot(registry, timestamps, versions, VERSION.get());
+    }
+
+
+    /**
+     * 从节点使用主节点的实例快照数据 进行 实例存储
+     * @param snapshot 实例快照
+     * @return version
+     */
+    public static synchronized long restore(Snapshot snapshot) {
+        REGISTRY.clear();
+        REGISTRY.putAll(snapshot.getRegistry());
+        TIMESTAMPS.clear();
+        TIMESTAMPS.putAll(snapshot.getTimestamps());
+        VERSIONS.clear();
+        VERSIONS.putAll(snapshot.getVersions());
+        VERSION.set(snapshot.getVersion());
+        return snapshot.getVersion();
     }
 
 }

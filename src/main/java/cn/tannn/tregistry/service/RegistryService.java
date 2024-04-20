@@ -61,10 +61,4 @@ public interface RegistryService {
     Map<String, Long> version(String... service);
 
 
-    /**
-     * 实例快照
-     *
-     * @return Snapshot
-     */
-    Snapshot snapshot();
 }

@@ -4,7 +4,7 @@ import cn.tannn.tregistry.model.InstanceMeta;
 import cn.tannn.tregistry.service.TRegistryService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.util.MultiValueMap;
+import org.springframework.util.LinkedMultiValueMap;
 
 import java.util.Map;
 
@@ -22,16 +22,16 @@ public class Snapshot {
     /**
      * 注册上来的服务集
      */
-   MultiValueMap<String, InstanceMeta> REGISTRY;
+    LinkedMultiValueMap<String, InstanceMeta> registry;
     /**
      * 实例时间戳  - 实例级别
      * (service + "@" + instance.toUrl(),时间戳)
      */
-    Map<String, Long> TIMESTAMPS;
+    Map<String, Long> timestamps;
     /**
      * 服务的版本 - 服务级别
      */
-    Map<String, Long> VERSIONS;
+    Map<String, Long> versions;
 
     /**
      * VERSIONS#value

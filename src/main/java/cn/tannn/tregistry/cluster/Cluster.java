@@ -2,6 +2,7 @@ package cn.tannn.tregistry.cluster;
 
 import cn.tannn.tregistry.http.HttpInvoker;
 import cn.tannn.tregistry.properties.TRegistryProperties;
+import cn.tannn.tregistry.service.TRegistryService;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -105,8 +106,10 @@ public class Cluster {
                         updateServers();
                         // 集群节点选主
                         new Election().electLeader(this.servers);
+                        // 同步快照
+                        syncSnapshotFormLeader();
                     } catch (Exception e) {
-                        log.error("集群节点探活/选举失败", e);
+                        log.error("集群节点探活/选举/快照同步失败", e);
                     }
                 }
                 , 10
@@ -115,6 +118,24 @@ public class Cluster {
 
     }
 
+
+    /**
+     * 同步快照 ：  节点实例数据同步, 从节点同步主节点数据
+     */
+    private void syncSnapshotFormLeader() {
+        // 将当前节点数据替换成主节点数据, （主节做快照，从节点用快照
+        Server leader = leader();
+        Server self = self();
+        //  非主 || 版本 < 主版本 （版本落后了要对其）
+        if (!self.isLeader() && self.getVersion() < leader.getVersion()) {
+            log.debug(" ===> leader version : {}, my version: {} , sync snapshot form leader : {} "
+                    , leader.getVersion(), self.getVersion(), leader);
+            // 拿到主节点信息
+            Snapshot masterNodeSnapshot = HttpInvoker.httpGet(leader.getUrl() + "/snapshot", Snapshot.class);
+            log.debug(" ===> sync snapshot: {}", masterNodeSnapshot);
+            TRegistryService.restore(masterNodeSnapshot);
+        }
+    }
 
 
     /**
@@ -125,7 +146,9 @@ public class Cluster {
         servers.stream().parallel().forEach(server -> {
             try {
                 // 探活自己没有意义
-                if(server.equals(MYSELF)){return;}
+                if (server.equals(MYSELF)) {
+                    return;
+                }
                 // 探活的同时，设置探活节点本身的 活跃状态，版本，leader状态
                 Server serverInfo = HttpInvoker.httpGet(server.getUrl() + "/info", Server.class);
                 log.info(" ===>>> health check success for {}", serverInfo);
@@ -143,14 +166,14 @@ public class Cluster {
     }
 
 
-
-
     /**
      * 当前节点信息
      *
      * @return Server
      */
     public Server self() {
+        //  获取当前的版本
+        MYSELF.setVersion(TRegistryService.VERSION.get());
         return MYSELF;
     }
 

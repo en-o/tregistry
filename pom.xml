@@ -2,24 +2,67 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.4</version>
-        <relativePath/> <!-- lookup parent from repository -->
-    </parent>
     <groupId>cn.tannn.cat</groupId>
     <artifactId>tregistry</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
     <name>tregistry</name>
+    <url>https://github.com/en-o/tregistry</url>
     <description>
         tregistry
     </description>
-    <properties>
-        <java.version>17</java.version>
 
+    <organization>
+        <name>tan</name>
+        <url>https://tannn.cn/</url>
+    </organization>
+
+
+    <!-- 开源许可证 -->
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+
+    <!-- 开源地址 -->
+    <scm>
+        <!-- 发布分支 -->
+        <tag>master</tag>
+        <url>https://github.com/en-o/tregistr</url>
+        <connection>https://github.com/en-o/tregistry</connection>
+        <developerConnection>https://github.com/en-o/tregistry</developerConnection>
+    </scm>
+
+    <!-- 开发者信息 -->
+    <developers>
+        <developer>
+            <id>tanning</id>
+            <name>tanning</name>
+            <email>1445763190@qq.com</email>
+            <organization>cn.tannn.cat</organization>
+            <url>https://tannn.cn/</url>
+            <roles>
+                <role>author</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <properties>
+        <!-- JDK -->
+        <java.version>17</java.version>
+        <!-- Spring -->
+        <spring.boot.version>3.2.3</spring.boot.version>
+        <!--当前项目版本-->
+        <tregistry.version>${project.version}</tregistry.version>
+        <!-- 工具 -->
         <fastjson2.version>2.0.47</fastjson2.version>
         <okhttp.version>4.12.0</okhttp.version>
+        <curator.version>5.1.0</curator.version>
+        <lombok.version>1.18.30</lombok.version>
+        <spring-cloud-context.version>4.1.0</spring-cloud-context.version>
         <!-- 测试 -->
         <maven-surefire.version>3.2.3</maven-surefire.version>
         <!-- 编译 -->
@@ -30,53 +73,178 @@
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
         <maven.compiler.release>17</maven.compiler.release>
     </properties>
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.alibaba.fastjson2</groupId>
-            <artifactId>fastjson2</artifactId>
-            <version>${fastjson2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-commons</artifactId>
-            <version>4.1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.squareup.okhttp3</groupId>
-            <artifactId>okhttp</artifactId>
-            <version>${okhttp.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+
+    <modules>
+        <!-- 核心 -->
+        <module>tregistry-core</module>
+        <!-- 注册中心服务 -->
+        <module>tregistry-server</module>
+        <!-- 客户端 -->
+        <module>tregistry-client</module>
+    </modules>
+
 
     <build>
         <plugins>
+            <!-- 全局版本修改 -->
             <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>2.8.1</version>
                 <configuration>
-                    <excludes>
-                        <exclude>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                        </exclude>
-                    </excludes>
+                    <!--pom不备份-->
+                    <generateBackupPoms>false</generateBackupPoms>
                 </configuration>
+            </plugin>
+            <!-- 编译的时候指定JDK和编码 ,-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>${java.version}</source> <!-- 源代码使用的JDK版本 -->
+                    <target>${java.version}</target> <!-- 需要生成的目标class文件的编译版本 -->
+                    <encoding>${project.build.sourceEncoding}</encoding> <!-- 字符集编码 -->
+                    <showWarnings>true</showWarnings><!--设置为true以显示编译警告-->
+                </configuration>
+            </plugin>
+            <!-- 将源码一并打包 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.1.0</version>
+                <inherited>true</inherited>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <excludeResources>true</excludeResources>
+                    <useDefaultExcludes>true</useDefaultExcludes>
+                </configuration>
+            </plugin>
+            <!-- Javadoc -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.6.3</version>
+                <inherited>true</inherited>
+                <configuration>
+                    <outputDirectory>${project.build.directory}/apidocs</outputDirectory>
+                    <reportOutputDirectory>${project.reporting.outputDirectory}/apidocs</reportOutputDirectory>
+                    <maxmemory>1024</maxmemory>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                    <charset>${project.build.sourceEncoding}</charset>
+                    <docencoding>${project.build.sourceEncoding}</docencoding>
+                    <show>protected</show>
+                    <notree>true</notree>
+                    <failOnError>false</failOnError>
+                    <doclint>none</doclint>
+                    <tags>
+                        <tag>
+                            <name>description</name>
+                            <placement>a</placement>
+                            <head>描述: </head>
+                        </tag>
+                        <tag>
+                            <name>return</name>
+                            <placement>a</placement>
+                            <head>return: </head>
+                        </tag>
+                        <tag>
+                            <name>ClassName</name>
+                            <placement>a</placement>
+                            <head>类名: </head>
+                        </tag>
+                        <tag>
+                            <name>link</name>
+                            <placement>a</placement>
+                            <head>外链: </head>
+                        </tag>
+                        <tag>
+                            <head>参数</head>
+                            <name>param: </name>
+                            <placement>a</placement>
+                        </tag>
+                        <tag>
+                            <name>date</name>
+                            <placement>a</placement>
+                            <head>时间: </head>
+                        </tag>
+                        <tag>
+                            <name>author</name>
+                            <placement>a</placement>
+                            <head>作者: </head>
+                        </tag>
+                    </tags>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>bundle-sources</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
+
+
+
+    <repositories>
+        <repository>
+            <id>central-repos1</id>
+            <name>Central Repository 2</name>
+            <url>http://repo1.maven.org/maven2/</url>
+        </repository>
+    </repositories>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <!-- 中央仓库 https://central.sonatype.org/publish/publish-portal-maven/ -->
+                    <plugin>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>0.4.0</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <publishingServerId>central</publishingServerId>
+                            <tokenAuth>true</tokenAuth>
+                            <!-- 自动提交 ，不写就自己去web手动点击-->
+                            <autoPublish>true</autoPublish>
+                            <deploymentName>tregistry</deploymentName>
+                            <excludeArtifacts>
+                                <excludeArtifact>tregistry-server</excludeArtifact>
+                            </excludeArtifacts>
+                        </configuration>
+                    </plugin>
+                    <!-- gpg -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>
